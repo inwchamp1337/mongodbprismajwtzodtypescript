@@ -3,14 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteMovie = exports.updateMovie = exports.getMovieById = exports.getAllMovies = exports.createMovie = void 0;
+exports.deleteMovie = exports.updateMovie = exports.createMovie = exports.getMovieById = exports.getAllMovies = void 0;
 const prisma_client_1 = __importDefault(require("../../prisma/prisma.client"));
-const createMovie = async (movieData) => {
-    return prisma_client_1.default.movie.create({
-        data: movieData
-    });
-};
-exports.createMovie = createMovie;
 const getAllMovies = async () => {
     return prisma_client_1.default.movie.findMany();
 };
@@ -21,10 +15,16 @@ const getMovieById = async (id) => {
     });
 };
 exports.getMovieById = getMovieById;
-const updateMovie = async (id, movieData) => {
+const createMovie = async (data) => {
+    return prisma_client_1.default.movie.create({
+        data
+    });
+};
+exports.createMovie = createMovie;
+const updateMovie = async (id, data) => {
     return prisma_client_1.default.movie.update({
         where: { id },
-        data: movieData
+        data
     });
 };
 exports.updateMovie = updateMovie;

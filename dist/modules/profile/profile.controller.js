@@ -33,91 +33,65 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteMovie = exports.updateMovie = exports.createMovie = exports.getMovieById = exports.getAllMovies = void 0;
-const movieService = __importStar(require("./movies.service"));
-const getAllMovies = async (req, res) => {
+exports.getMyProfile = exports.getProfileById = exports.getAllProfiles = void 0;
+const profileService = __importStar(require("./profile.service"));
+const getAllProfiles = async (req, res) => {
     try {
-        const movies = await movieService.getAllMovies();
+        const profiles = await profileService.getAllProfiles();
         res.json({
             success: true,
-            data: movies
+            data: profiles
         });
     }
     catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Failed to fetch movies'
+            message: 'Failed to fetch profiles'
         });
     }
 };
-exports.getAllMovies = getAllMovies;
-const getMovieById = async (req, res) => {
+exports.getAllProfiles = getAllProfiles;
+const getProfileById = async (req, res) => {
     try {
-        const movie = await movieService.getMovieById(req.params.id);
-        if (!movie) {
+        const profile = await profileService.getProfileById(req.params.id);
+        if (!profile) {
             return res.status(404).json({
                 success: false,
-                message: 'Movie not found'
+                message: 'Profile not found'
             });
         }
         res.json({
             success: true,
-            data: movie
+            data: profile
         });
     }
     catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Failed to fetch movie'
+            message: 'Failed to fetch profile'
         });
     }
 };
-exports.getMovieById = getMovieById;
-const createMovie = async (req, res) => {
+exports.getProfileById = getProfileById;
+const getMyProfile = async (req, res) => {
     try {
-        const movie = await movieService.createMovie(req.body);
-        res.status(201).json({
-            success: true,
-            data: movie
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to create movie'
-        });
-    }
-};
-exports.createMovie = createMovie;
-const updateMovie = async (req, res) => {
-    try {
-        const movie = await movieService.updateMovie(req.params.id, req.body);
+        const profile = await profileService.getProfileByUserId(req.userId);
+        if (!profile) {
+            return res.status(404).json({
+                success: false,
+                message: 'Profile not found'
+            });
+        }
         res.json({
             success: true,
-            data: movie
+            data: profile
         });
     }
     catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Failed to update movie'
+            message: 'Failed to fetch profile'
         });
     }
 };
-exports.updateMovie = updateMovie;
-const deleteMovie = async (req, res) => {
-    try {
-        await movieService.deleteMovie(req.params.id);
-        res.json({
-            success: true,
-            message: 'Movie deleted successfully'
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to delete movie'
-        });
-    }
-};
-exports.deleteMovie = deleteMovie;
+exports.getMyProfile = getMyProfile;

@@ -1,39 +1,64 @@
-// src/services/auth.service.ts
 import prisma from '../../prisma/prisma.client'
 import { hashPassword, comparePassword } from '../../utils/bcrypt.utils'
 import { generateToken } from '../../utils/jwt.utils'
 
-export const registerUser = async (email: string, password: string, username: string) => {
-    const existingUser = await prisma.user.findUnique({ where: { email } })
-    if (existingUser) {
-        throw new Error('EMAIL_EXISTS')
+export const register = async (data: {
+    email: string
+    password: string
+    username: string
+    profile: {
+        fullName: string
+        avatarUrl?: string
+        bio?: string
+        birthday: Date
     }
-
-    const hashedPassword = hashPassword(password)
+}) => {
+    const hashedPassword = await hashPassword(data.password)
 
     const user = await prisma.user.create({
         data: {
-            email,
+            email: data.email,
             password: hashedPassword,
-            username
+            username: data.username,
+            profile: {
+                create: {
+                    fullName: data.profile.fullName,
+                    avatarUrl: data.profile.avatarUrl || '',
+                    bio: data.profile.bio || '',
+                    birthday: data.profile.birthday
+                }
+            }
+        },
+        include: {
+            profile: true
         }
     })
 
+    const { password, ...userWithoutPassword } = user
     const token = generateToken(user.id)
-    return { user, token }
+
+    return { user: userWithoutPassword, token }
 }
 
-export const loginUser = async (email: string, password: string) => {
-    const user = await prisma.user.findUnique({ where: { email } })
+export const login = async (email: string, password: string) => {
+    const user = await prisma.user.findUnique({
+        where: { email },
+        include: {
+            profile: true
+        }
+    })
+
     if (!user) {
-        throw new Error('INVALID_CREDENTIALS')
+        throw new Error('Invalid credentials')
     }
 
-    const isMatch = comparePassword(password, user.password)
-    if (!isMatch) {
-        throw new Error('INVALID_CREDENTIALS')
+    const isPasswordValid = await comparePassword(password, user.password)
+    if (!isPasswordValid) {
+        throw new Error('Invalid credentials')
     }
 
+    const { password: _, ...userWithoutPassword } = user
     const token = generateToken(user.id)
-    return { user, token }
+
+    return { user: userWithoutPassword, token }
 }

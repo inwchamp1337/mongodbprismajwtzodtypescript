@@ -24,19 +24,53 @@
                 "type": "object",
                 "required": [
                     "email",
-                    "password"
+                    "password",
+                    "username",
+                    "profile"
                 ],
                 "properties": {
                     "email": {
                         "type": "string",
-                        "format": "email"
+                        "format": "email",
+                        "description": "อีเมลของผู้ใช้ (ต้องไม่ซ้ำ)"
                     },
                     "password": {
                         "type": "string",
-                        "minLength": 6
+                        "minLength": 6,
+                        "description": "รหัสผ่าน (อย่างน้อย 6 ตัวอักษร)"
                     },
                     "username": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 3,
+                        "description": "ชื่อผู้ใช้ (ต้องไม่ซ้ำ)"
+                    },
+                    "profile": {
+                        "type": "object",
+                        "required": [
+                            "fullName",
+                            "birthday"
+                        ],
+                        "properties": {
+                            "fullName": {
+                                "type": "string",
+                                "minLength": 2,
+                                "description": "ชื่อเต็มของผู้ใช้"
+                            },
+                            "avatarUrl": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "URL ของรูปโปรไฟล์ (optional)"
+                            },
+                            "bio": {
+                                "type": "string",
+                                "description": "คำอธิบายสั้น ๆ เกี่ยวกับผู้ใช้ (optional)"
+                            },
+                            "birthday": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "วันเกิดของผู้ใช้"
+                            }
+                        }
                     }
                 }
             },
@@ -49,128 +83,122 @@
                 "properties": {
                     "email": {
                         "type": "string",
-                        "format": "email"
+                        "format": "email",
+                        "description": "อีเมลสำหรับเข้าสู่ระบบ"
                     },
                     "password": {
                         "type": "string",
-                        "minLength": 6
+                        "minLength": 6,
+                        "description": "รหัสผ่าน"
                     }
                 }
             },
-            "CreateMovie": {
+            "Profile": {
                 "type": "object",
-                "required": [
-                    "title"
-                ],
                 "properties": {
-                    "title": {
-                        "type": "string"
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "releaseDate": {
+                    "id": {
                         "type": "string",
-                        "format": "date-time"
+                        "description": "Profile ID"
                     },
-                    "genre": {
-                        "type": "string"
+                    "fullName": {
+                        "type": "string",
+                        "description": "ชื่อเต็มของผู้ใช้"
+                    },
+                    "avatarUrl": {
+                        "type": "string",
+                        "format": "uri",
+                        "description": "URL ของรูปโปรไฟล์"
+                    },
+                    "bio": {
+                        "type": "string",
+                        "description": "คำอธิบายสั้น ๆ เกี่ยวกับผู้ใช้"
+                    },
+                    "birthday": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "วันเกิดของผู้ใช้"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "วันที่สร้างโปรไฟล์"
+                    },
+                    "user": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "username": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string",
+                                "format": "email"
+                            }
+                        }
                     }
                 }
             },
-            "UpdateMovie": {
+            "ErrorResponse": {
                 "type": "object",
                 "properties": {
-                    "title": {
-                        "type": "string"
+                    "success": {
+                        "type": "boolean",
+                        "example": false
                     },
-                    "description": {
-                        "type": "string"
-                    },
-                    "releaseDate": {
+                    "message": {
                         "type": "string",
-                        "format": "date-time"
-                    },
-                    "genre": {
-                        "type": "string"
+                        "example": "Error message"
                     }
                 }
             },
-            "CreateReview": {
-                "type": "object",
-                "required": [
-                    "movieId",
-                    "rating"
-                ],
-                "properties": {
-                    "movieId": {
-                        "type": "string",
-                        "description": "ID of the movie being reviewed"
-                    },
-                    "rating": {
-                        "type": "integer",
-                        "minimum": 1,
-                        "maximum": 5,
-                        "description": "Rating for the movie (1-5)"
-                    },
-                    "content": {
-                        "type": "string",
-                        "description": "Optional review content"
-                    }
-                }
-            },
-            "UpdateReview": {
+            "AuthResponse": {
                 "type": "object",
                 "properties": {
-                    "rating": {
-                        "type": "integer",
-                        "minimum": 1,
-                        "maximum": 5,
-                        "description": "Updated rating for the movie (1-5)"
+                    "success": {
+                        "type": "boolean",
+                        "example": true
                     },
-                    "content": {
-                        "type": "string",
-                        "description": "Updated review content"
-                    }
-                }
-            },
-            "CreateComment": {
-                "type": "object",
-                "required": [
-                    "reviewId",
-                    "content"
-                ],
-                "properties": {
-                    "reviewId": {
-                        "type": "string",
-                        "description": "ID of the review being commented on"
-                    },
-                    "content": {
-                        "type": "string",
-                        "description": "Content of the comment"
-                    }
-                }
-            },
-            "UpdateComment": {
-                "type": "object",
-                "properties": {
-                    "content": {
-                        "type": "string",
-                        "description": "Updated content of the comment"
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "token": {
+                                "type": "string",
+                                "description": "JWT Token"
+                            },
+                            "user": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "profile": {
+                                        "$ref": "#/components/schemas/Profile"
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
     },
-    "security": [
-        {
-            "BearerAuth": []
-        }
-    ],
     "paths": {
         "/auth/register": {
             "post": {
+                "tags": [
+                    "Authentication"
+                ],
                 "summary": "Register a new user",
+                "description": "Create a new user account with profile",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -183,20 +211,49 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "User registered successfully"
+                        "description": "User registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
                     },
                     "409": {
-                        "description": "Email already exists"
+                        "description": "Email or username already exists",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
                     },
                     "500": {
-                        "description": "Registration failed"
+                        "description": "Registration failed",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
                     }
                 }
             }
         },
         "/auth/login": {
             "post": {
+                "tags": [
+                    "Authentication"
+                ],
                 "summary": "Login a user",
+                "description": "Authenticate user and get access token",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -209,395 +266,221 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "User logged in successfully"
+                        "description": "Login successful",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
                     },
                     "401": {
-                        "description": "Invalid credentials"
+                        "description": "Invalid credentials",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
                     },
                     "500": {
-                        "description": "Login failed"
-                    }
-                }
-            }
-        },
-        "/movies": {
-            "get": {
-                "summary": "Get all movies",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of movies"
-                    },
-                    "500": {
-                        "description": "Failed to fetch movies"
-                    }
-                }
-            },
-            "post": {
-                "summary": "Create a new movie",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateMovie"
+                        "description": "Login failed",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
                             }
                         }
                     }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Movie created successfully"
-                    },
-                    "500": {
-                        "description": "Failed to create movie"
-                    }
                 }
             }
         },
-        "/movies/{id}": {
+        "/profiles": {
             "get": {
-                "summary": "Get a movie by ID",
-                "parameters": [
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get all profiles",
+                "description": "Retrieve a list of all user profiles (admin only)",
+                "security": [
                     {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "BearerAuth": []
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Movie details"
+                        "description": "List of all profiles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Profile"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing token",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - User is not admin",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/profiles/me": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get my profile",
+                "description": "Retrieve the profile of the currently authenticated user",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Current user's profile",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Profile"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing token",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
                     },
                     "404": {
-                        "description": "Movie not found"
+                        "description": "Profile not found",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
                     },
                     "500": {
-                        "description": "Failed to fetch movie"
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
                     }
                 }
-            },
-            "put": {
-                "summary": "Update a movie",
+            }
+        },
+        "/profiles/{id}": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Get profile by ID",
+                "description": "Retrieve a specific profile by its ID",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
                         "required": true,
+                        "description": "Profile ID",
                         "schema": {
                             "type": "string"
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UpdateMovie"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Movie updated successfully"
+                        "description": "Profile details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Profile"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - Invalid or missing token",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
                     },
                     "404": {
-                        "description": "Movie not found"
-                    },
-                    "500": {
-                        "description": "Failed to update movie"
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete a movie",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Movie deleted successfully"
-                    },
-                    "404": {
-                        "description": "Movie not found"
-                    },
-                    "500": {
-                        "description": "Failed to delete movie"
-                    }
-                }
-            }
-        },
-        "/reviews": {
-            "post": {
-                "summary": "Create a new review",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateReview"
+                        "description": "Profile not found",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
                             }
                         }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Review created successfully"
                     },
                     "500": {
-                        "description": "Failed to create review"
-                    }
-                }
-            }
-        },
-        "/reviews/movie/{movieId}": {
-            "get": {
-                "summary": "Get reviews for a specific movie",
-                "parameters": [
-                    {
-                        "name": "movieId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "ID of the movie"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of reviews for the movie"
-                    },
-                    "500": {
-                        "description": "Failed to fetch reviews"
-                    }
-                }
-            }
-        },
-        "/reviews/user": {
-            "get": {
-                "summary": "Get reviews by the authenticated user",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of reviews by the user"
-                    },
-                    "500": {
-                        "description": "Failed to fetch reviews"
-                    }
-                }
-            }
-        },
-        "/reviews/{id}": {
-            "put": {
-                "summary": "Update a review",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "ID of the review to update"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UpdateReview"
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "$ref": "#/components/schemas/ErrorResponse"
                             }
                         }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Review updated successfully"
-                    },
-                    "500": {
-                        "description": "Failed to update review"
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete a review",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "ID of the review to delete"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Review deleted successfully"
-                    },
-                    "500": {
-                        "description": "Failed to delete review"
-                    }
-                }
-            }
-        },
-        "/comments": {
-            "post": {
-                "summary": "Create a new comment",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/CreateComment"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Comment created successfully"
-                    },
-                    "500": {
-                        "description": "Failed to create comment"
-                    }
-                }
-            }
-        },
-        "/comments/review/{reviewId}": {
-            "get": {
-                "summary": "Get comments for a specific review",
-                "parameters": [
-                    {
-                        "name": "reviewId",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "ID of the review"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "List of comments for the review"
-                    },
-                    "500": {
-                        "description": "Failed to fetch comments"
-                    }
-                }
-            }
-        },
-        "/comments/{id}": {
-            "put": {
-                "summary": "Update a comment",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "ID of the comment to update"
-                    }
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/UpdateComment"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Comment updated successfully"
-                    },
-                    "500": {
-                        "description": "Failed to update comment"
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete a comment",
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        },
-                        "description": "ID of the comment to delete"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Comment deleted successfully"
-                    },
-                    "500": {
-                        "description": "Failed to delete comment"
                     }
                 }
             }
