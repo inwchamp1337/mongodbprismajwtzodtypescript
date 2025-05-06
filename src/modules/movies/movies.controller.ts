@@ -1,0 +1,56 @@
+import { Request, Response } from 'express'
+import * as movieService from './movies.service'
+
+export const createMovie = async (req: Request, res: Response) => {
+    try {
+        const movie = await movieService.createMovie({
+            ...req.body,
+            releaseDate: req.body.releaseDate ? new Date(req.body.releaseDate) : undefined
+        })
+        res.status(201).json({ success: true, data: movie })
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to create movie' })
+    }
+}
+
+export const getAllMovies = async (req: Request, res: Response) => {
+    try {
+        const movies = await movieService.getAllMovies()
+        res.json({ success: true, data: movies })
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to fetch movies' })
+    }
+}
+
+export const getMovieById = async (req: Request, res: Response) => {
+    try {
+        const movie = await movieService.getMovieById(req.params.id)
+        if (!movie) {
+            return res.status(404).json({ success: false, message: 'Movie not found' })
+        }
+        res.json({ success: true, data: movie })
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to fetch movie' })
+    }
+}
+
+export const updateMovie = async (req: Request, res: Response) => {
+    try {
+        const movie = await movieService.updateMovie(req.params.id, {
+            ...req.body,
+            releaseDate: req.body.releaseDate ? new Date(req.body.releaseDate) : undefined
+        })
+        res.json({ success: true, data: movie })
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to update movie' })
+    }
+}
+
+export const deleteMovie = async (req: Request, res: Response) => {
+    try {
+        await movieService.deleteMovie(req.params.id)
+        res.json({ success: true, message: 'Movie deleted successfully' })
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Failed to delete movie' })
+    }
+}

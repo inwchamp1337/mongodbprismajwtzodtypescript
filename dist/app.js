@@ -6,11 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const auth_routes_1 = __importDefault(require("./modules/auth/auth.routes"));
 const errorHandler_1 = require("./middleware/errorHandler");
+const movies_routes_1 = __importDefault(require("./modules/movies/movies.routes"));
 const app = (0, express_1.default)();
 // Middleware
 app.use(express_1.default.json());
 // Routes
 app.use('/api/auth', auth_routes_1.default);
+app.use('/api/movies', movies_routes_1.default);
 // Error Handling
 app.use(errorHandler_1.errorHandler);
 exports.default = app;
