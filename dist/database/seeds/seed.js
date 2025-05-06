@@ -14,7 +14,7 @@ async function main() {
             data: {
                 email: faker_1.faker.internet.email(),
                 password: await (0, bcrypt_utils_1.hashPassword)('password123'),
-                username: faker_1.faker.internet.userName(),
+                username: faker_1.faker.internet.username(),
                 profile: {
                     create: {
                         fullName: faker_1.faker.person.fullName(),
@@ -87,5 +87,6 @@ main()
     process.exit(1);
 })
     .finally(async () => {
+    console.log("Dibi Seeds Completed Successfully! ");
     await prisma_client_1.default.$disconnect();
 });
