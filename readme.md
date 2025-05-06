@@ -3,6 +3,9 @@
 A not simple authentication system built with Node.js, Express, TypeScript, Prisma, and JWT.
 ![SHOWCASE](https://github.com/user-attachments/assets/8c8d0a23-9eee-4ac6-8215-7657f1759225)
 
+## ER Diagram
+![ER](https://github.com/user-attachments/assets/88e12deb-3549-49f0-b9bf-4b2dbe9aabda)
+
 
 ## Features
 
