@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const auth_routes_1 = __importDefault(require("./modules/auth/auth.routes"));
 const movies_routes_1 = __importDefault(require("./modules/movies/movies.routes"));
 const reviews_routes_1 = __importDefault(require("./modules/reviews/reviews.routes"));
+const comment_routes_1 = __importDefault(require("./modules/comment/comment.routes"));
 const errorHandler_1 = require("./middleware/errorHandler");
 const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const swagger_json_1 = __importDefault(require("./swagger/swagger.json"));
@@ -19,6 +20,7 @@ app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.de
 app.use('/api/auth', auth_routes_1.default);
 app.use('/api/movies', movies_routes_1.default);
 app.use('/api/reviews', reviews_routes_1.default);
+app.use('/api/comments', comment_routes_1.default);
 // Error Handling
 app.use(errorHandler_1.errorHandler);
 exports.default = app;

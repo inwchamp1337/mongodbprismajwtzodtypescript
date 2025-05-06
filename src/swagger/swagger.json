@@ -133,6 +133,32 @@
                         "description": "Updated review content"
                     }
                 }
+            },
+            "CreateComment": {
+                "type": "object",
+                "required": [
+                    "reviewId",
+                    "content"
+                ],
+                "properties": {
+                    "reviewId": {
+                        "type": "string",
+                        "description": "ID of the review being commented on"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "Content of the comment"
+                    }
+                }
+            },
+            "UpdateComment": {
+                "type": "object",
+                "properties": {
+                    "content": {
+                        "type": "string",
+                        "description": "Updated content of the comment"
+                    }
+                }
             }
         }
     },
@@ -454,6 +480,124 @@
                     },
                     "500": {
                         "description": "Failed to delete review"
+                    }
+                }
+            }
+        },
+        "/comments": {
+            "post": {
+                "summary": "Create a new comment",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateComment"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Comment created successfully"
+                    },
+                    "500": {
+                        "description": "Failed to create comment"
+                    }
+                }
+            }
+        },
+        "/comments/review/{reviewId}": {
+            "get": {
+                "summary": "Get comments for a specific review",
+                "parameters": [
+                    {
+                        "name": "reviewId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "ID of the review"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of comments for the review"
+                    },
+                    "500": {
+                        "description": "Failed to fetch comments"
+                    }
+                }
+            }
+        },
+        "/comments/{id}": {
+            "put": {
+                "summary": "Update a comment",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "ID of the comment to update"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateComment"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Comment updated successfully"
+                    },
+                    "500": {
+                        "description": "Failed to update comment"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a comment",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "ID of the comment to delete"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comment deleted successfully"
+                    },
+                    "500": {
+                        "description": "Failed to delete comment"
                     }
                 }
             }
