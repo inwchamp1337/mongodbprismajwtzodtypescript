@@ -1,0 +1,462 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Movie Review API",
+        "version": "1.0.0",
+        "description": "API documentation for the Movie Review application."
+    },
+    "servers": [
+        {
+            "url": "http://localhost:3001/api"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "description": "Enter your token. Example: Bearer eyJhbGciOiJIUzI1NiIs..."
+            }
+        },
+        "schemas": {
+            "Register": {
+                "type": "object",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 6
+                    },
+                    "username": {
+                        "type": "string"
+                    }
+                }
+            },
+            "Login": {
+                "type": "object",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "password": {
+                        "type": "string",
+                        "minLength": 6
+                    }
+                }
+            },
+            "CreateMovie": {
+                "type": "object",
+                "required": [
+                    "title"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "releaseDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "genre": {
+                        "type": "string"
+                    }
+                }
+            },
+            "UpdateMovie": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "releaseDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "genre": {
+                        "type": "string"
+                    }
+                }
+            },
+            "CreateReview": {
+                "type": "object",
+                "required": [
+                    "movieId",
+                    "rating"
+                ],
+                "properties": {
+                    "movieId": {
+                        "type": "string",
+                        "description": "ID of the movie being reviewed"
+                    },
+                    "rating": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 5,
+                        "description": "Rating for the movie (1-5)"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "Optional review content"
+                    }
+                }
+            },
+            "UpdateReview": {
+                "type": "object",
+                "properties": {
+                    "rating": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 5,
+                        "description": "Updated rating for the movie (1-5)"
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "Updated review content"
+                    }
+                }
+            }
+        }
+    },
+    "security": [
+        {
+            "BearerAuth": []
+        }
+    ],
+    "paths": {
+        "/auth/register": {
+            "post": {
+                "summary": "Register a new user",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Register"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User registered successfully"
+                    },
+                    "409": {
+                        "description": "Email already exists"
+                    },
+                    "500": {
+                        "description": "Registration failed"
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "summary": "Login a user",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Login"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User logged in successfully"
+                    },
+                    "401": {
+                        "description": "Invalid credentials"
+                    },
+                    "500": {
+                        "description": "Login failed"
+                    }
+                }
+            }
+        },
+        "/movies": {
+            "get": {
+                "summary": "Get all movies",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of movies"
+                    },
+                    "500": {
+                        "description": "Failed to fetch movies"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a new movie",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateMovie"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Movie created successfully"
+                    },
+                    "500": {
+                        "description": "Failed to create movie"
+                    }
+                }
+            }
+        },
+        "/movies/{id}": {
+            "get": {
+                "summary": "Get a movie by ID",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Movie details"
+                    },
+                    "404": {
+                        "description": "Movie not found"
+                    },
+                    "500": {
+                        "description": "Failed to fetch movie"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a movie",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateMovie"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Movie updated successfully"
+                    },
+                    "404": {
+                        "description": "Movie not found"
+                    },
+                    "500": {
+                        "description": "Failed to update movie"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a movie",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Movie deleted successfully"
+                    },
+                    "404": {
+                        "description": "Movie not found"
+                    },
+                    "500": {
+                        "description": "Failed to delete movie"
+                    }
+                }
+            }
+        },
+        "/reviews": {
+            "post": {
+                "summary": "Create a new review",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateReview"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Review created successfully"
+                    },
+                    "500": {
+                        "description": "Failed to create review"
+                    }
+                }
+            }
+        },
+        "/reviews/movie/{movieId}": {
+            "get": {
+                "summary": "Get reviews for a specific movie",
+                "parameters": [
+                    {
+                        "name": "movieId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "ID of the movie"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of reviews for the movie"
+                    },
+                    "500": {
+                        "description": "Failed to fetch reviews"
+                    }
+                }
+            }
+        },
+        "/reviews/user": {
+            "get": {
+                "summary": "Get reviews by the authenticated user",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of reviews by the user"
+                    },
+                    "500": {
+                        "description": "Failed to fetch reviews"
+                    }
+                }
+            }
+        },
+        "/reviews/{id}": {
+            "put": {
+                "summary": "Update a review",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "ID of the review to update"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateReview"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Review updated successfully"
+                    },
+                    "500": {
+                        "description": "Failed to update review"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a review",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "ID of the review to delete"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review deleted successfully"
+                    },
+                    "500": {
+                        "description": "Failed to delete review"
+                    }
+                }
+            }
+        }
+    }
+}
