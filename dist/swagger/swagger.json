@@ -140,6 +140,82 @@
                     }
                 }
             },
+            "Movie": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "description": "Movie ID"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "ชื่อภาพยนตร์"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "รายละเอียดภาพยนตร์"
+                    },
+                    "releaseDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "วันที่เข้าฉาย"
+                    },
+                    "genre": {
+                        "type": "string",
+                        "description": "ประเภทของภาพยนตร์"
+                    }
+                }
+            },
+            "CreateMovie": {
+                "type": "object",
+                "required": [
+                    "title",
+                    "description",
+                    "releaseDate",
+                    "genre"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "ชื่อภาพยนตร์"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "รายละเอียดภาพยนตร์"
+                    },
+                    "releaseDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "วันที่เข้าฉาย"
+                    },
+                    "genre": {
+                        "type": "string",
+                        "description": "ประเภทของภาพยนตร์"
+                    }
+                }
+            },
+            "UpdateMovie": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "type": "string",
+                        "description": "ชื่อภาพยนตร์"
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "รายละเอียดภาพยนตร์"
+                    },
+                    "releaseDate": {
+                        "type": "string",
+                        "format": "date-time",
+                        "description": "วันที่เข้าฉาย"
+                    },
+                    "genre": {
+                        "type": "string",
+                        "description": "ประเภทของภาพยนตร์"
+                    }
+                }
+            },
             "ErrorResponse": {
                 "type": "object",
                 "properties": {
@@ -224,7 +300,9 @@
                         "description": "Email or username already exists",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     },
@@ -232,7 +310,9 @@
                         "description": "Invalid input data",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     },
@@ -240,7 +320,9 @@
                         "description": "Registration failed",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     }
@@ -279,7 +361,9 @@
                         "description": "Invalid credentials",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     },
@@ -287,7 +371,9 @@
                         "description": "Login failed",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     }
@@ -325,23 +411,45 @@
                                             }
                                         }
                                     }
+                                },
+                                "example": {
+                                    "success": true,
+                                    "data": [
+                                        {
+                                            "id": "6819c43d24a05c28d379c3fb",
+                                            "fullName": "John Doe",
+                                            "avatarUrl": "https://example.com/avatar.jpg",
+                                            "bio": "Movie enthusiast",
+                                            "birthday": "1990-01-01T00:00:00.000Z",
+                                            "createdAt": "2023-12-01T10:00:00.000Z",
+                                            "user": {
+                                                "id": "6819c43d24a05c28d379c3fb",
+                                                "username": "johndoe",
+                                                "email": "john@example.com"
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         }
                     },
                     "401": {
-                        "description": "Unauthorized - Invalid or missing token",
+                        "description": "Unauthorized",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     },
                     "403": {
-                        "description": "Forbidden - User is not admin",
+                        "description": "Forbidden",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     },
@@ -349,7 +457,9 @@
                         "description": "Internal server error",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     }
@@ -384,15 +494,33 @@
                                             "$ref": "#/components/schemas/Profile"
                                         }
                                     }
+                                },
+                                "example": {
+                                    "success": true,
+                                    "data": {
+                                        "id": "6819c43d24a05c28d379c3fb",
+                                        "fullName": "John Doe",
+                                        "avatarUrl": "https://example.com/avatar.jpg",
+                                        "bio": "Movie enthusiast",
+                                        "birthday": "1990-01-01T00:00:00.000Z",
+                                        "createdAt": "2023-12-01T10:00:00.000Z",
+                                        "user": {
+                                            "id": "6819c43d24a05c28d379c3fb",
+                                            "username": "johndoe",
+                                            "email": "john@example.com"
+                                        }
+                                    }
                                 }
                             }
                         }
                     },
                     "401": {
-                        "description": "Unauthorized - Invalid or missing token",
+                        "description": "Unauthorized",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     },
@@ -400,7 +528,9 @@
                         "description": "Profile not found",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     },
@@ -408,7 +538,9 @@
                         "description": "Internal server error",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     }
@@ -454,15 +586,33 @@
                                             "$ref": "#/components/schemas/Profile"
                                         }
                                     }
+                                },
+                                "example": {
+                                    "success": true,
+                                    "data": {
+                                        "id": "6819c43d24a05c28d379c3fb",
+                                        "fullName": "John Doe",
+                                        "avatarUrl": "https://example.com/avatar.jpg",
+                                        "bio": "Movie enthusiast",
+                                        "birthday": "1990-01-01T00:00:00.000Z",
+                                        "createdAt": "2023-12-01T10:00:00.000Z",
+                                        "user": {
+                                            "id": "6819c43d24a05c28d379c3fb",
+                                            "username": "johndoe",
+                                            "email": "john@example.com"
+                                        }
+                                    }
                                 }
                             }
                         }
                     },
                     "401": {
-                        "description": "Unauthorized - Invalid or missing token",
+                        "description": "Unauthorized",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     },
@@ -470,7 +620,140 @@
                         "description": "Profile not found",
                         "content": {
                             "application/json": {
-                                "$ref": "#/components/schemas/ErrorResponse"
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/movies": {
+            "get": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Get all movies",
+                "description": "Retrieve a list of all movies",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of movies",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Movie"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Create a new movie",
+                "description": "Add a new movie to the database",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateMovie"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Movie created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Movie"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     },
@@ -479,6 +762,248 @@
                         "content": {
                             "application/json": {
                                 "$ref": "#/components/schemas/ErrorResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/movies/{id}": {
+            "get": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Get movie by ID",
+                "description": "Retrieve a specific movie by its ID",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Movie details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Movie"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Movie not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Update a movie",
+                "description": "Update an existing movie's information",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateMovie"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Movie updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/Movie"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid input data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Movie not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Movies"
+                ],
+                "summary": "Delete a movie",
+                "description": "Delete an existing movie",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Movie deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Movie deleted successfully"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Movie not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
                             }
                         }
                     }
