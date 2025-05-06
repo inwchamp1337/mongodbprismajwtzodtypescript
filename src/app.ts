@@ -10,7 +10,7 @@ import likeRouter from './modules/like/like.routes'
 
 import { errorHandler } from './middleware/errorHandler'
 import swaggerUi from 'swagger-ui-express'
-import swaggerDocument from './swagger/swagger.json'
+// import swaggerDocument from './swagger/swagger.json'
 
 const app = express()
 
@@ -18,7 +18,7 @@ const app = express()
 app.use(express.json())
 
 // Swagger documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
 // Routes
 app.use('/api/auth', authRouter)

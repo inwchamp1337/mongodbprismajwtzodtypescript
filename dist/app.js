@@ -11,13 +11,12 @@ const reviews_routes_1 = __importDefault(require("./modules/reviews/reviews.rout
 const comment_routes_1 = __importDefault(require("./modules/comment/comment.routes"));
 const like_routes_1 = __importDefault(require("./modules/like/like.routes"));
 const errorHandler_1 = require("./middleware/errorHandler");
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const swagger_json_1 = __importDefault(require("./swagger/swagger.json"));
+// import swaggerDocument from './swagger/swagger.json'
 const app = (0, express_1.default)();
 // Middleware
 app.use(express_1.default.json());
 // Swagger documentation
-app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_json_1.default));
+// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 // Routes
 app.use('/api/auth', auth_routes_1.default);
 app.use('/api/profiles', profile_routes_1.default);
