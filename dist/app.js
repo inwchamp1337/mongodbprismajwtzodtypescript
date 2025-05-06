@@ -21,6 +21,9 @@ app.use(express_1.default.json());
 //Swagger documentation
 app.use('/api-docs', swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(swagger_config_1.specs));
 // Routes
+app.get('/', (req, res) => {
+    res.send('Hello World');
+});
 app.use('/api/auth', auth_routes_1.default);
 app.use('/api/profiles', profile_routes_1.default);
 app.use('/api/movies', movies_routes_1.default);

@@ -26,6 +26,9 @@ app.use(express.json())
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Routes
+app.get('/', (req, res) => {
+    res.send('Hello World');
+});
 app.use('/api/auth', authRouter)
 app.use('/api/profiles', profileRouter)
 app.use('/api/movies', movieRouter)
