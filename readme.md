@@ -1,6 +1,6 @@
-# MOVIE REVIEW 
+# Movie Review System
 
-A simple authentication system built with Node.js, Express, TypeScript, Prisma, and JWT.
+A not simple authentication system built with Node.js, Express, TypeScript, Prisma, and JWT.
 
 ## Features
 
