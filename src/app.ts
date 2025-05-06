@@ -1,4 +1,6 @@
 import express from 'express'
+import swaggerUi from 'swagger-ui-express'
+import { specs } from './swagger/swagger.config'
 
 
 import authRouter from './modules/auth/auth.routes'
@@ -9,16 +11,19 @@ import commentRouter from './modules/comment/comment.routes'
 import likeRouter from './modules/like/like.routes'
 
 import { errorHandler } from './middleware/errorHandler'
-import swaggerUi from 'swagger-ui-express'
+
+// import swaggerUi from 'swagger-ui-express'
 // import swaggerDocument from './swagger/swagger.json'
+
+
 
 const app = express()
 
 // Middleware
 app.use(express.json())
 
-// Swagger documentation
-// app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+//Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Routes
 app.use('/api/auth', authRouter)

@@ -140,9 +140,9 @@ const deleteComment = async (req, res) => {
     }
     catch (error) {
         if (error.message === 'Comment not found or unauthorized') {
-            return res.status(404).json({
+            return res.status(403).json({
                 success: false,
-                message: error.message
+                message: 'You can only delete your own comments'
             });
         }
         res.status(500).json({

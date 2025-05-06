@@ -133,15 +133,10 @@ const updateReview = async (req, res) => {
         });
     }
     catch (error) {
-        if (error.message === 'Review not found or unauthorized') {
-            return res.status(404).json({
-                success: false,
-                message: error.message
-            });
-        }
-        res.status(500).json({
+        console.error('Controller error:', error);
+        res.status(error.message.includes('not found') ? 404 : 500).json({
             success: false,
-            message: 'Failed to update review'
+            message: error.message || 'Failed to update review'
         });
     }
 };
@@ -155,15 +150,10 @@ const deleteReview = async (req, res) => {
         });
     }
     catch (error) {
-        if (error.message === 'Review not found or unauthorized') {
-            return res.status(404).json({
-                success: false,
-                message: error.message
-            });
-        }
-        res.status(500).json({
+        console.error('Controller error:', error);
+        res.status(error.message.includes('not found') ? 404 : 500).json({
             success: false,
-            message: 'Failed to delete review'
+            message: error.message || 'Failed to delete review'
         });
     }
 };

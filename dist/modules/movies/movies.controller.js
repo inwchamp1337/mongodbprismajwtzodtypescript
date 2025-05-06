@@ -114,9 +114,9 @@ const deleteMovie = async (req, res) => {
         });
     }
     catch (error) {
-        res.status(500).json({
+        res.status(error.message === 'Movie not found' ? 404 : 500).json({
             success: false,
-            message: 'Failed to delete movie'
+            message: error.message || 'Failed to delete movie'
         });
     }
 };

@@ -86,47 +86,69 @@ export const updateReview = async (
         content?: string
     }
 ) => {
-    // Check if review belongs to user
-    const review = await prisma.review.findFirst({
-        where: {
-            id,
-            userId
-        }
-    })
+    try {
+        // Check if review belongs to user
+        const review = await prisma.review.findFirst({
+            where: {
+                // Add type conversion for MongoDB ObjectId
+                id: id,
+                userId: userId
+            }
+        })
 
-    if (!review) {
-        throw new Error('Review not found or unauthorized')
+        if (!review) {
+            throw new Error('Review not found or unauthorized')
+        }
+
+        return await prisma.review.update({
+            where: { id: id },
+            data,
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true
+                    }
+                },
+                movie: true
+            }
+        })
+    } catch (error) {
+        console.error('Error updating review:', error)
+        throw error
     }
-
-    return prisma.review.update({
-        where: { id },
-        data,
-        include: {
-            user: {
-                select: {
-                    id: true,
-                    username: true
-                }
-            },
-            movie: true
-        }
-    })
 }
 
 export const deleteReview = async (id: string, userId: string) => {
-    // Check if review belongs to user
-    const review = await prisma.review.findFirst({
-        where: {
-            id,
-            userId
+    try {
+        // Check if review belongs to user
+        const review = await prisma.review.findFirst({
+            where: {
+                // Add type conversion for MongoDB ObjectId
+                id: id,
+                userId: userId
+            }
+        })
+
+        if (!review) {
+            throw new Error('Review not found or unauthorized')
         }
-    })
 
-    if (!review) {
-        throw new Error('Review not found or unauthorized')
+        // Delete related records first
+        await prisma.comment.deleteMany({
+            where: { reviewId: id }
+        })
+
+        await prisma.like.deleteMany({
+            where: { reviewId: id }
+        })
+
+        // Then delete the review
+        return await prisma.review.delete({
+            where: { id: id }
+        })
+    } catch (error) {
+        console.error('Error deleting review:', error)
+        throw error
     }
-
-    return prisma.review.delete({
-        where: { id }
-    })
 }

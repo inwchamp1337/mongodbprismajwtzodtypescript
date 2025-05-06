@@ -74,10 +74,10 @@ export const deleteMovie = async (req: Request, res: Response) => {
             success: true,
             message: 'Movie deleted successfully'
         })
-    } catch (error) {
-        res.status(500).json({
+    } catch (error: any) {
+        res.status(error.message === 'Movie not found' ? 404 : 500).json({
             success: false,
-            message: 'Failed to delete movie'
+            message: error.message || 'Failed to delete movie'
         })
     }
 }

@@ -79,44 +79,66 @@ const createReview = async (data) => {
 };
 exports.createReview = createReview;
 const updateReview = async (id, userId, data) => {
-    // Check if review belongs to user
-    const review = await prisma_client_1.default.review.findFirst({
-        where: {
-            id,
-            userId
+    try {
+        // Check if review belongs to user
+        const review = await prisma_client_1.default.review.findFirst({
+            where: {
+                // Add type conversion for MongoDB ObjectId
+                id: id,
+                userId: userId
+            }
+        });
+        if (!review) {
+            throw new Error('Review not found or unauthorized');
         }
-    });
-    if (!review) {
-        throw new Error('Review not found or unauthorized');
+        return await prisma_client_1.default.review.update({
+            where: { id: id },
+            data,
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true
+                    }
+                },
+                movie: true
+            }
+        });
     }
-    return prisma_client_1.default.review.update({
-        where: { id },
-        data,
-        include: {
-            user: {
-                select: {
-                    id: true,
-                    username: true
-                }
-            },
-            movie: true
-        }
-    });
+    catch (error) {
+        console.error('Error updating review:', error);
+        throw error;
+    }
 };
 exports.updateReview = updateReview;
 const deleteReview = async (id, userId) => {
-    // Check if review belongs to user
-    const review = await prisma_client_1.default.review.findFirst({
-        where: {
-            id,
-            userId
+    try {
+        // Check if review belongs to user
+        const review = await prisma_client_1.default.review.findFirst({
+            where: {
+                // Add type conversion for MongoDB ObjectId
+                id: id,
+                userId: userId
+            }
+        });
+        if (!review) {
+            throw new Error('Review not found or unauthorized');
         }
-    });
-    if (!review) {
-        throw new Error('Review not found or unauthorized');
+        // Delete related records first
+        await prisma_client_1.default.comment.deleteMany({
+            where: { reviewId: id }
+        });
+        await prisma_client_1.default.like.deleteMany({
+            where: { reviewId: id }
+        });
+        // Then delete the review
+        return await prisma_client_1.default.review.delete({
+            where: { id: id }
+        });
     }
-    return prisma_client_1.default.review.delete({
-        where: { id }
-    });
+    catch (error) {
+        console.error('Error deleting review:', error);
+        throw error;
+    }
 };
 exports.deleteReview = deleteReview;

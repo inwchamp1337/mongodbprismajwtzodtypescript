@@ -91,18 +91,33 @@ const updateComment = async (id, userId, data) => {
 };
 exports.updateComment = updateComment;
 const deleteComment = async (id, userId) => {
-    // Check if comment belongs to user
-    const comment = await prisma_client_1.default.comment.findFirst({
-        where: {
-            id,
-            userId
+    try {
+        // Check if comment exists and belongs to the user
+        const comment = await prisma_client_1.default.comment.findFirst({
+            where: {
+                id,
+                userId, // This ensures only the comment owner can delete it
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true
+                    }
+                }
+            }
+        });
+        if (!comment) {
+            throw new Error('Comment not found or unauthorized');
         }
-    });
-    if (!comment) {
-        throw new Error('Comment not found or unauthorized');
+        // If comment belongs to user, delete it
+        return await prisma_client_1.default.comment.delete({
+            where: { id }
+        });
     }
-    return prisma_client_1.default.comment.delete({
-        where: { id }
-    });
+    catch (error) {
+        console.error('Error deleting comment:', error);
+        throw error;
+    }
 };
 exports.deleteComment = deleteComment;
