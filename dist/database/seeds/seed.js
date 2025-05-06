@@ -7,9 +7,11 @@ const faker_1 = require("@faker-js/faker");
 const prisma_client_1 = __importDefault(require("../../prisma/prisma.client"));
 const bcrypt_utils_1 = require("../../utils/bcrypt.utils");
 async function main() {
+    console.log("🚀 Starting data seeding...");
     // Create users with profiles
     const users = [];
     for (let i = 0; i < 5; i++) {
+        console.log(`👤 Creating user ${i + 1}...`);
         const user = await prisma_client_1.default.user.create({
             data: {
                 email: faker_1.faker.internet.email(),
@@ -30,6 +32,7 @@ async function main() {
     // Create movies
     const movies = [];
     for (let i = 0; i < 10; i++) {
+        console.log(`🎬 Creating movie ${i + 1}...`);
         const movie = await prisma_client_1.default.movie.create({
             data: {
                 title: faker_1.faker.music.songName(),
@@ -44,6 +47,7 @@ async function main() {
     for (const user of users) {
         for (const movie of movies) {
             if (Math.random() > 0.5) { // 50% chance to create review
+                console.log(`📝 Creating review for movie "${movie.title}" by user "${user.username}"...`);
                 const review = await prisma_client_1.default.review.create({
                     data: {
                         userId: user.id,
@@ -80,6 +84,7 @@ async function main() {
             }
         }
     }
+    console.log("🎉 Data skibidi completed successfully! 🌟");
 }
 main()
     .catch((e) => {
@@ -87,6 +92,5 @@ main()
     process.exit(1);
 })
     .finally(async () => {
-    console.log("Dibi Seeds Completed Successfully! ");
     await prisma_client_1.default.$disconnect();
 });
