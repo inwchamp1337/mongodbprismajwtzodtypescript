@@ -3,9 +3,12 @@ import prisma from '../../prisma/prisma.client';
 import { hashPassword } from '../../utils/bcrypt.utils';
 
 async function main() {
+    console.log("🚀 Starting data seeding...");
+
     // Create users with profiles
     const users = [];
     for (let i = 0; i < 5; i++) {
+        console.log(`👤 Creating user ${i + 1}...`);
         const user = await prisma.user.create({
             data: {
                 email: faker.internet.email(),
@@ -27,6 +30,7 @@ async function main() {
     // Create movies
     const movies = [];
     for (let i = 0; i < 10; i++) {
+        console.log(`🎬 Creating movie ${i + 1}...`);
         const movie = await prisma.movie.create({
             data: {
                 title: faker.music.songName(),
@@ -42,6 +46,7 @@ async function main() {
     for (const user of users) {
         for (const movie of movies) {
             if (Math.random() > 0.5) { // 50% chance to create review
+                console.log(`📝 Creating review for movie "${movie.title}" by user "${user.username}"...`);
                 const review = await prisma.review.create({
                     data: {
                         userId: user.id,
@@ -79,6 +84,8 @@ async function main() {
             }
         }
     }
+
+    console.log("🎉 Data skibidi completed successfully! 🌟");
 }
 
 main()
@@ -87,6 +94,5 @@ main()
         process.exit(1);
     })
     .finally(async () => {
-        console.log("Dibi Seeds Completed Successfully! ");
         await prisma.$disconnect();
     });
