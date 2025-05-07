@@ -12,12 +12,7 @@ export const register = async (req: Request, res: Response) => {
             }
         })
     } catch (error: any) {
-        if (error.code === 'P2002') {
-            return res.status(409).json({
-                success: false,
-                message: 'Email or username already exists'
-            })
-        }
+
         res.status(500).json({
             success: false,
             message: 'Registration failed'
