@@ -1,16 +1,11 @@
 #!/bin/sh
-
-
 # Build and prepare Prisma
-echo "🔧 Building project..."
+echo "Building project..."
 npm run build
-
-echo "⚙️ Generating Prisma client..."
+echo "Generating Prisma client..."
 npx prisma generate
-
-echo "📂 Pushing schema to database..."
+echo "=Pushing schema to database..."
 npx prisma db push
-
 # Start the application
-echo "🚀 Starting app..."
+echo "=Starting app..."
 npm run start
