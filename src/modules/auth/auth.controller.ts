@@ -1,7 +1,11 @@
 import { Request, Response } from 'express'
 import * as authService from './auth.service'
+import { RegisterInput } from './auth.schemas'
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (
+    req: Request<{}, {}, RegisterInput>,
+    res: Response
+) => {
     try {
         const { user, token } = await authService.register(req.body)
         res.status(201).json({
@@ -9,8 +13,12 @@ export const register = async (req: Request, res: Response) => {
             data: { user, token }
         })
     } catch (error: any) {
+<<<<<<< HEAD
         // ปรับปรุงการจัดการ error
         if (error.message.includes('exists')) {
+=======
+        if (error.message?.includes('exists')) {
+>>>>>>> NEW-schema_update
             return res.status(409).json({
                 success: false,
                 message: error.message
