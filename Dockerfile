@@ -1,8 +1,12 @@
 # Use the official Node.js image as the base image
 FROM node:18
 
+LABEL maintainer="admin"
+
+LABEL description="MOVIE REVIEWS LUL!"
+
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
@@ -14,12 +18,13 @@ RUN npm install
 COPY . .
 
 # Copy the .env file into the container
-COPY .env /usr/src/app/.env
+ENV NODE_ENV production
 
 # Expose the port your app runs on
-EXPOSE 3001
 
-RUN npm run build
+RUN chmod +x ./entrypoint.sh
+
+
 # Command to run your application
-RUN npx prisma generate
-CMD ["npm", "run", "start"]
+CMD ["/bin/sh", "./entrypoint.sh"]
+

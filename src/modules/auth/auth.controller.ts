@@ -6,13 +6,16 @@ export const register = async (req: Request, res: Response) => {
         const { user, token } = await authService.register(req.body)
         res.status(201).json({
             success: true,
-            data: {
-                user,
-                token
-            }
+            data: { user, token }
         })
     } catch (error: any) {
-
+        // ปรับปรุงการจัดการ error
+        if (error.message.includes('exists')) {
+            return res.status(409).json({
+                success: false,
+                message: error.message
+            })
+        }
         res.status(500).json({
             success: false,
             message: 'Registration failed'

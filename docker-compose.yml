@@ -1,12 +1,32 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+  mongo_db:
+    container_name: database_container
+    image: mongo:latest
+    restart: always
+    command: [ "--replSet", "rs0", "--bind_ip_all" ]
     ports:
-      - "3001:3001"
-    env_file:
-      - .env
+      - "27018:27017"
     volumes:
-      - .:/usr/src/app
-      - /usr/src/app/node_modules
+      - mongo_db:/data/db
+    healthcheck:
+      test: >
+        mongosh --eval "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}) }"
+      interval: 5s
+      timeout: 30s
+      retries: 30
+      start_period: 10s
+
+  app:
+    build: .
+    ports:
+      - 3001:3001
+    environment:
+      APP_NAME: LearnDocker
+      PORT: 3001
+      DATABASE_URL: "mongodb://mongo_db:27017/dockerlearn?replicaSet=rs0&directConnection=true"
+    depends_on:
+      mongo_db:
+        condition: service_healthy
+
+volumes:
+  mongo_db: {}
