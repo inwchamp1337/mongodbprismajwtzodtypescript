@@ -1,20 +1,10 @@
 import prisma from '../../prisma/prisma.client'
 import { hashPassword, comparePassword } from '../../utils/bcrypt.utils'
 import { generateToken } from '../../utils/jwt.utils'
+import { RegisterInput } from './auth.schemas'
 
-export const register = async (data: {
-    email: string
-    password: string
-    username: string
-    profile: {
-        fullName: string
-        avatarUrl?: string
-        bio?: string
-        birthday: Date
-    }
-}) => {
+export const register = async (data: RegisterInput) => {
     try {
-        // Check if email or username already exists
         const existingUser = await prisma.user.findFirst({
             where: {
                 OR: [
@@ -23,13 +13,15 @@ export const register = async (data: {
                 ]
             }
         })
-
         if (existingUser) {
             throw new Error('Email or username already exists')
         }
+        const birthday =
+            data.profile.birthday instanceof Date
+                ? data.profile.birthday
+                : new Date(data.profile.birthday)
 
         const hashedPassword = await hashPassword(data.password)
-
         const user = await prisma.user.create({
             data: {
                 email: data.email,
@@ -40,18 +32,15 @@ export const register = async (data: {
                         fullName: data.profile.fullName,
                         avatarUrl: data.profile.avatarUrl || '',
                         bio: data.profile.bio || '',
-                        birthday: data.profile.birthday
+                        birthday
                     }
                 }
             },
-            include: {
-                profile: true
-            }
+            include: { profile: true }
         })
 
-        const { password, ...userWithoutPassword } = user
         const token = generateToken(user.id)
-
+        const { password, ...userWithoutPassword } = user
         return { user: userWithoutPassword, token }
     } catch (error) {
         if (error instanceof Error) {
@@ -60,7 +49,6 @@ export const register = async (data: {
         throw new Error('Registration failed: Unknown error')
     }
 }
-
 export const login = async (email: string, password: string) => {
     try {
         const user = await prisma.user.findUnique({

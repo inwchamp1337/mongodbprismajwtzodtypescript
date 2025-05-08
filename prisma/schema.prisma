@@ -27,9 +27,9 @@ model Profile {
   id         String     @id @default(auto()) @map("_id") @db.ObjectId
   userId     String     @unique @db.ObjectId
   fullName   String
-  avatarUrl  String
-  bio        String
-  birthday   DateTime
+  avatarUrl  String?
+  bio        String?
+  birthday   DateTime?
   createdAt  DateTime   @default(now())
 
   // Define foreign-key side of the one-to-one relation
