@@ -1,7 +1,13 @@
 import prisma from '../../prisma/prisma.client'
+import { reviewCache } from './review.cache'
 
 export const getAllReviews = async () => {
-    return prisma.review.findMany({
+    // Try get from cache first
+    const cached = await reviewCache.getAllReviews()
+    if (cached) return cached
+
+    // If not in cache, get from DB
+    const reviews = await prisma.review.findMany({
         include: {
             user: {
                 select: {
@@ -12,10 +18,18 @@ export const getAllReviews = async () => {
             movie: true
         }
     })
+
+    // Save to cache
+    await reviewCache.setAllReviews(reviews)
+    return reviews
 }
 
 export const getReviewById = async (id: string) => {
-    return prisma.review.findUnique({
+
+    const cached = await reviewCache.getReview(id)
+    if (cached) return cached
+
+    const review = await prisma.review.findUnique({
         where: { id },
         include: {
             user: {
@@ -29,6 +43,12 @@ export const getReviewById = async (id: string) => {
             likes: true
         }
     })
+
+    if (review) {
+
+        await reviewCache.setReview(id, review)  //save 
+    }
+    return review
 }
 
 export const getReviewsByMovie = async (movieId: string) => {
@@ -45,7 +65,7 @@ export const getReviewsByMovie = async (movieId: string) => {
             likes: true
         }
     })
-}
+} //เดะกลับมาเขียน 
 
 export const getReviewsByUser = async (userId: string) => {
     return prisma.review.findMany({
