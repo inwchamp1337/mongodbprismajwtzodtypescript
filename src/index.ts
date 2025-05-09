@@ -1,7 +1,7 @@
 import app from './app';
 import prisma from './prisma/prisma.client';
 import { config } from './config';
-
+import redis from './redis/redis.client';
 const DB_TIMEOUT = 5000; // มิลลิวินาที
 
 async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
@@ -34,11 +34,18 @@ async function startServer() {
         await withTimeout(prisma.$runCommandRaw({ ping: 1 }), DB_TIMEOUT);
 
         console.log('✅ Database is ready');
+
+        await redis.connect();
+        await redis.ping();
+        console.log('✅ Redis connected');
+
+
         app.listen(config.PORT, () => {
             console.log(`🚀 Server running on port ${config.PORT}`);
         });
     } catch (error) {
-        console.error('❌ Failed to initialize database:', error);
+        // console.error('❌ Failed to initialize database:', error);
+        console.error('❌ Failed to initialize ', error);
         process.exit(1);
     }
 }
