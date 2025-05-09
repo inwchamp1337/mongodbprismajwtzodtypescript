@@ -23,6 +23,9 @@ ENV NODE_ENV production
 # Expose the port your app runs on
 
 RUN chmod +x ./entrypoint.sh
+# Build and prepare Prisma at build time
+RUN npm run build
+RUN npx prisma generate
 
 
 # Command to run your application
