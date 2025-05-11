@@ -1,7 +1,12 @@
 import prisma from '../../prisma/prisma.client'
+import { commentCache } from './comment.cache'
 
 export const getAllComments = async () => {
-    return prisma.comment.findMany({
+    // Try get from cache first
+    const cached = await commentCache.getAllComments()
+    if (cached) return cached
+
+    const comments = await prisma.comment.findMany({
         include: {
             user: {
                 select: {
@@ -12,10 +17,18 @@ export const getAllComments = async () => {
             review: true
         }
     })
+
+    // Save to cache
+    await commentCache.setAllComments(comments)
+    return comments
 }
 
 export const getCommentsByReview = async (reviewId: string) => {
-    return prisma.comment.findMany({
+    // Try get from cache first
+    const cached = await commentCache.getReviewComments(reviewId)
+    if (cached) return cached
+
+    const comments = await prisma.comment.findMany({
         where: { reviewId },
         include: {
             user: {
@@ -29,10 +42,18 @@ export const getCommentsByReview = async (reviewId: string) => {
             createdAt: 'desc'
         }
     })
+
+    // Save to cache
+    await commentCache.setReviewComments(reviewId, comments)
+    return comments
 }
 
 export const getCommentById = async (id: string) => {
-    return prisma.comment.findUnique({
+    // Try get from cache first
+    const cached = await commentCache.getComment(id)
+    if (cached) return cached
+
+    const comment = await prisma.comment.findUnique({
         where: { id },
         include: {
             user: {
@@ -44,6 +65,11 @@ export const getCommentById = async (id: string) => {
             review: true
         }
     })
+
+    if (comment) {
+        await commentCache.setComment(id, comment)
+    }
+    return comment
 }
 
 export const createComment = async (data: {
@@ -51,7 +77,7 @@ export const createComment = async (data: {
     reviewId: string
     content: string
 }) => {
-    return prisma.comment.create({
+    const comment = await prisma.comment.create({
         data,
         include: {
             user: {
@@ -62,6 +88,12 @@ export const createComment = async (data: {
             }
         }
     })
+
+    // Invalidate affected caches
+    await commentCache.invalidateAll()
+    await commentCache.invalidateReviewComments(data.reviewId)
+
+    return comment
 }
 
 export const updateComment = async (
@@ -71,39 +103,49 @@ export const updateComment = async (
         content: string
     }
 ) => {
-    // Check if comment belongs to user
-    const comment = await prisma.comment.findFirst({
-        where: {
-            id,
-            userId
+    try {
+        const comment = await prisma.comment.findFirst({
+            where: {
+                id,
+                userId
+            }
+        })
+
+        if (!comment) {
+            throw new Error('Comment not found or unauthorized')
         }
-    })
 
-    if (!comment) {
-        throw new Error('Comment not found or unauthorized')
-    }
-
-    return prisma.comment.update({
-        where: { id },
-        data,
-        include: {
-            user: {
-                select: {
-                    id: true,
-                    username: true
+        const updatedComment = await prisma.comment.update({
+            where: { id },
+            data,
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true
+                    }
                 }
             }
-        }
-    })
+        })
+
+        // Invalidate affected caches
+        await commentCache.invalidateComment(id)
+        await commentCache.invalidateAll()
+        await commentCache.invalidateReviewComments(comment.reviewId)
+
+        return updatedComment
+    } catch (error) {
+        console.error('Error updating comment:', error)
+        throw error
+    }
 }
 
 export const deleteComment = async (id: string, userId: string) => {
     try {
-        // Check if comment exists and belongs to the user
         const comment = await prisma.comment.findFirst({
             where: {
                 id,
-                userId, // This ensures only the comment owner can delete it
+                userId
             },
             include: {
                 user: {
@@ -119,10 +161,16 @@ export const deleteComment = async (id: string, userId: string) => {
             throw new Error('Comment not found or unauthorized')
         }
 
-        // If comment belongs to user, delete it
-        return await prisma.comment.delete({
+        const deletedComment = await prisma.comment.delete({
             where: { id }
         })
+
+        // Invalidate affected caches
+        await commentCache.invalidateComment(id)
+        await commentCache.invalidateAll()
+        await commentCache.invalidateReviewComments(comment.reviewId)
+
+        return deletedComment
     } catch (error) {
         console.error('Error deleting comment:', error)
         throw error

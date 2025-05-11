@@ -52,7 +52,11 @@ export const getReviewById = async (id: string) => {
 }
 
 export const getReviewsByMovie = async (movieId: string) => {
-    return prisma.review.findMany({
+    // Try get from cache first
+    const cached = await reviewCache.getMovieReviews(movieId)
+    if (cached) return cached
+
+    const reviews = await prisma.review.findMany({
         where: { movieId },
         include: {
             user: {
@@ -65,9 +69,14 @@ export const getReviewsByMovie = async (movieId: string) => {
             likes: true
         }
     })
+
+    // Save to cache
+    await reviewCache.setMovieReviews(movieId, reviews)
+    return reviews
 } //เดะกลับมาเขียน 
 
 export const getReviewsByUser = async (userId: string) => {
+    // Add user reviews cache later if needed
     return prisma.review.findMany({
         where: { userId },
         include: {
@@ -77,14 +86,13 @@ export const getReviewsByUser = async (userId: string) => {
         }
     })
 }
-
 export const createReview = async (data: {
     userId: string
     movieId: string
     rating: number
     content: string
 }) => {
-    return prisma.review.create({
+    const review = await prisma.review.create({
         data,
         include: {
             user: {
@@ -96,6 +104,12 @@ export const createReview = async (data: {
             movie: true
         }
     })
+
+    // Invalidate affected caches
+    await reviewCache.invalidateAll()
+    await reviewCache.invalidateMovieReviews(data.movieId)
+
+    return review
 }
 
 export const updateReview = async (
@@ -105,22 +119,10 @@ export const updateReview = async (
         rating?: number
         content?: string
     }
-) => {
+) => {       //กลับมาดูใหม่นะแปลกยุ 
     try {
         // Check if review belongs to user
-        const review = await prisma.review.findFirst({
-            where: {
-                // Add type conversion for MongoDB ObjectId
-                id: id,
-                userId: userId
-            }
-        })
-
-        if (!review) {
-            throw new Error('Review not found or unauthorized')
-        }
-
-        return await prisma.review.update({
+        const updatedReview = await prisma.review.update({
             where: { id: id },
             data,
             include: {
@@ -133,6 +135,14 @@ export const updateReview = async (
                 movie: true
             }
         })
+
+        // Invalidate affected caches
+        await reviewCache.invalidateReview(id)
+        await reviewCache.invalidateAll()
+        await reviewCache.invalidateMovieReviews(updatedReview.movieId)
+
+        return updatedReview
+
     } catch (error) {
         console.error('Error updating review:', error)
         throw error
@@ -153,6 +163,9 @@ export const deleteReview = async (id: string, userId: string) => {
         if (!review) {
             throw new Error('Review not found or unauthorized')
         }
+        // Store movieId before deletion for cache invalidation
+        const movieId = review.movieId
+
 
         // Delete related records first
         await prisma.comment.deleteMany({
@@ -167,6 +180,13 @@ export const deleteReview = async (id: string, userId: string) => {
         return await prisma.review.delete({
             where: { id: id }
         })
+
+        // Invalidate affected caches
+        await reviewCache.invalidateReview(id)
+        await reviewCache.invalidateAll()
+        await reviewCache.invalidateMovieReviews(movieId)
+
+        return review
     } catch (error) {
         console.error('Error deleting review:', error)
         throw error

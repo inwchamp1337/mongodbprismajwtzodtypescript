@@ -1,8 +1,12 @@
 import prisma from '../../prisma/prisma.client'
-
+import { movieCache } from './movie.cache'
 export const getAllMovies = async () => {
     try {
-        return await prisma.movie.findMany({
+        // Try get from cache first
+        const cached = await movieCache.getAllMovies()
+        if (cached) return cached
+
+        const movies = await prisma.movie.findMany({
             include: {
                 reviews: {
                     include: {
@@ -16,6 +20,10 @@ export const getAllMovies = async () => {
                 }
             }
         })
+
+        // Save to cache
+        await movieCache.setAllMovies(movies)
+        return movies
     } catch (error) {
         console.error('Error fetching movies:', error)
         throw error
@@ -24,6 +32,10 @@ export const getAllMovies = async () => {
 
 export const getMovieById = async (id: string) => {
     try {
+        // Try get from cache first
+        const cached = await movieCache.getMovie(id)
+        if (cached) return cached
+
         const movie = await prisma.movie.findUnique({
             where: { id },
             include: {
@@ -44,6 +56,8 @@ export const getMovieById = async (id: string) => {
             throw new Error('Movie not found')
         }
 
+        // Save to cache
+        await movieCache.setMovie(id, movie)
         return movie
     } catch (error) {
         console.error('Error fetching movie:', error)
@@ -58,12 +72,16 @@ export const createMovie = async (data: {
     genre: string
 }) => {
     try {
-        return await prisma.movie.create({
+        const movie = await prisma.movie.create({
             data,
             include: {
                 reviews: true
             }
         })
+
+        // Invalidate cache
+        await movieCache.invalidateAll()
+        return movie
     } catch (error) {
         console.error('Error creating movie:', error)
         throw error
@@ -80,21 +98,19 @@ export const updateMovie = async (
     }
 ) => {
     try {
-        const movie = await prisma.movie.findUnique({
-            where: { id }
-        })
-
-        if (!movie) {
-            throw new Error('Movie not found')
-        }
-
-        return await prisma.movie.update({
+        const movie = await prisma.movie.update({
             where: { id },
             data,
             include: {
                 reviews: true
             }
         })
+
+        // Invalidate affected caches
+        await movieCache.invalidateMovie(id)
+        await movieCache.invalidateAll()
+
+        return movie
     } catch (error) {
         console.error('Error updating movie:', error)
         throw error
@@ -103,24 +119,20 @@ export const updateMovie = async (
 
 export const deleteMovie = async (id: string) => {
     try {
-        // Check if movie exists
-        const movie = await prisma.movie.findUnique({
-            where: { id }
-        })
-
-        if (!movie) {
-            throw new Error('Movie not found')
-        }
-
         // Delete related reviews first
         await prisma.review.deleteMany({
             where: { movieId: id }
         })
 
-        // Then delete the movie
-        return await prisma.movie.delete({
+        const movie = await prisma.movie.delete({
             where: { id }
         })
+
+        // Invalidate affected caches
+        await movieCache.invalidateMovie(id)
+        await movieCache.invalidateAll()
+
+        return movie
     } catch (error) {
         console.error('Error deleting movie:', error)
         throw error
