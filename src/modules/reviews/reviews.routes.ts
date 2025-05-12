@@ -4,7 +4,8 @@ import { validateRequest } from '../../middleware/validateRequest'
 import {
     createReviewSchema,
     updateReviewSchema,
-    reviewParamsSchema
+    reviewParamsSchema,
+    movieIdParamSchema
 } from './reviews.schemas'
 import {
     getAllReviews,
@@ -235,7 +236,7 @@ router.use(authMiddleware)
 // Routes
 router.get('/', getAllReviews)
 router.post('/', validateRequest(createReviewSchema), createReview)
-router.get('/movie/:movieId', validateRequest(reviewParamsSchema), getReviewsByMovie)
+router.get('/movie/:movieId', validateRequest(movieIdParamSchema), getReviewsByMovie)
 router.get('/me', getMyReviews)
 router.get('/:id', validateRequest(reviewParamsSchema), getReviewById)
 router.put('/:id', validateRequest(updateReviewSchema), updateReview)

@@ -39,3 +39,11 @@ export const reviewParamsSchema = z.object({
         })
     })
 })
+
+export const movieIdParamSchema = z.object({
+    params: z.object({
+        movieId: z.string({
+            required_error: 'Movie ID is required'
+        }).regex(/^[a-f\d]{24}$/i, 'Invalid movie id format')
+    })
+})

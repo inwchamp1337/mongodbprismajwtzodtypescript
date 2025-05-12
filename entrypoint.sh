@@ -15,4 +15,4 @@ fi
 echo "Starting app..."
 #npm run start
 
-npm run start
+npm run dev

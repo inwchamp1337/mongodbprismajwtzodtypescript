@@ -52,28 +52,39 @@ export const getReviewById = async (id: string) => {
 }
 
 export const getReviewsByMovie = async (movieId: string) => {
-    // Try get from cache first
-    const cached = await reviewCache.getMovieReviews(movieId)
-    if (cached) return cached
+    try {
+        // Try get from cache first
+        const cached = await reviewCache.getMovieReviews(movieId)
+        if (cached) return cached
 
-    const reviews = await prisma.review.findMany({
-        where: { movieId },
-        include: {
-            user: {
-                select: {
-                    id: true,
-                    username: true
-                }
-            },
-            comments: true,
-            likes: true
+        const reviews = await prisma.review.findMany({
+            where: { movieId },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true
+                    }
+                },
+                movie: true,
+                comments: true,
+                likes: true
+            }
+        })
+
+        // Save to cache
+        await reviewCache.setMovieReviews(movieId, reviews)
+        return reviews
+
+    } catch (error: any) {
+        // Handle Prisma error code P2023 (Malformed ObjectID)
+        if (error.code === 'P2023') {
+            throw new Error('Invalid movie id format')
         }
-    })
-
-    // Save to cache
-    await reviewCache.setMovieReviews(movieId, reviews)
-    return reviews
-} //เดะกลับมาเขียน 
+        console.error('Error fetching reviews:', error)
+        throw error
+    }
+}
 
 export const getReviewsByUser = async (userId: string) => {
     // Add user reviews cache later if needed
@@ -119,9 +130,21 @@ export const updateReview = async (
         rating?: number
         content?: string
     }
-) => {       //กลับมาดูใหม่นะแปลกยุ 
+) => {
     try {
-        // Check if review belongs to user
+        // First check if review exists and belongs to user
+        const existingReview = await prisma.review.findFirst({
+            where: {
+                id: id,
+                userId: userId
+            }
+        })
+
+        if (!existingReview) {
+            throw new Error('Review not found or unauthorized')
+        }
+
+        // Then perform update
         const updatedReview = await prisma.review.update({
             where: { id: id },
             data,
@@ -143,9 +166,16 @@ export const updateReview = async (
 
         return updatedReview
 
-    } catch (error) {
+    } catch (error: any) {
+        // Add specific error handling
+        if (error.code === 'P2023') {
+            throw new Error('Invalid review id format')
+        }
+        if (error.message === 'Review not found or unauthorized') {
+            throw error
+        }
         console.error('Error updating review:', error)
-        throw error
+        throw new Error('Failed to update review')
     }
 }
 

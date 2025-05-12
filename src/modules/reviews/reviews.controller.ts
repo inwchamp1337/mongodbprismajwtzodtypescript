@@ -44,7 +44,13 @@ export const getReviewsByMovie = async (req: Request, res: Response) => {
             success: true,
             data: reviews
         })
-    } catch (error) {
+    } catch (error: any) {
+        if (error.message === 'Invalid movie id format') {
+            return res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
         res.status(500).json({
             success: false,
             message: 'Failed to fetch reviews'
