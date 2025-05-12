@@ -130,17 +130,19 @@ export const updateMovie = async (
         const movie = await prisma.movie.update({
             where: { id },
             data,
-            include: {
-                reviews: true
-            }
+            include: { reviews: true }
         })
 
-        // Invalidate affected caches
         await movieCache.invalidateMovie(id)
         await movieCache.invalidateAll()
-
         return movie
-    } catch (error) {
+    } catch (error: any) {
+        if (error.code === 'P2023') {
+            throw new Error('Invalid movie id format')
+        }
+        if (error.code === 'P2025') {
+            throw new Error('Movie not found')
+        }
         console.error('Error updating movie:', error)
         throw error
     }
@@ -148,21 +150,44 @@ export const updateMovie = async (
 
 export const deleteMovie = async (id: string) => {
     try {
-        // Delete related reviews first
-        await prisma.review.deleteMany({
-            where: { movieId: id }
+        // 1. หา review ทั้งหมดของ movie นี้
+        const reviews = await prisma.review.findMany({
+            where: { movieId: id },
+            select: { id: true }
         })
 
+        const reviewIds = reviews.map(r => r.id)
+
+        // 2. ลบ like ที่เกี่ยวกับ review เหล่านี้
+        if (reviewIds.length > 0) {
+            await prisma.like.deleteMany({
+                where: { reviewId: { in: reviewIds } }
+            })
+            // 3. ลบ comment ที่เกี่ยวกับ review เหล่านี้
+            await prisma.comment.deleteMany({
+                where: { reviewId: { in: reviewIds } }
+            })
+        }
+
+
+        // 3. ลบ review ของ movie นี้
+        await prisma.review.deleteMany({ where: { movieId: id } })
+
+        // 4. ลบ movie
         const movie = await prisma.movie.delete({
             where: { id }
         })
 
-        // Invalidate affected caches
         await movieCache.invalidateMovie(id)
         await movieCache.invalidateAll()
-
         return movie
-    } catch (error) {
+    } catch (error: any) {
+        if (error.code === 'P2023') {
+            throw new Error('Invalid movie id format')
+        }
+        if (error.code === 'P2025') {
+            throw new Error('Movie not found')
+        }
         console.error('Error deleting movie:', error)
         throw error
     }
