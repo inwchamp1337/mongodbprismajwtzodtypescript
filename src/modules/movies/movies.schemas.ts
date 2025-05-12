@@ -27,6 +27,6 @@ export const movieParamsSchema = z.object({
     params: z.object({
         id: z.string({
             required_error: 'Movie ID is required'
-        })
+        }).regex(/^[a-f\d]{24}$/i, 'Invalid movie id format')
     })
 })

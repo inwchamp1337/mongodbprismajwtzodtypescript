@@ -4,14 +4,21 @@ import * as movieService from './movies.service'
 export const getAllMovies = async (req: Request, res: Response) => {
     try {
         const movies = await movieService.getAllMovies()
-        res.json({
+        res.status(201).json({
             success: true,
             data: movies
         })
-    } catch (error) {
+    } catch (error: any) {
+        // ปรับปรุงการจัดการ error
+        if (error.message.includes('exists')) {
+            return res.status(409).json({
+                success: false,
+                message: error.message
+            })
+        }
         res.status(500).json({
             success: false,
-            message: 'Failed to fetch movies'
+            message: 'failed'
         })
     }
 }
@@ -44,13 +51,20 @@ export const createMovie = async (req: Request, res: Response) => {
             success: true,
             data: movie
         })
-    } catch (error) {
+    } catch (error: any) {
+        if (error.statusCode === 409) {
+            return res.status(409).json({
+                success: false,
+                message: error.message
+            })
+        }
         res.status(500).json({
             success: false,
-            message: 'Failed to create movie'
+            message: error.message || 'Failed to create movie'
         })
     }
 }
+
 
 export const updateMovie = async (req: Request, res: Response) => {
     try {

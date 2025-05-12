@@ -34,7 +34,8 @@ router.use(authMiddleware)
  *           type: string
  *         releaseDate:
  *           type: string
- *           format: date
+ *           format: date-time
+ *           example: "2025-05-12T02:17:25.443Z"
  *         genre:
  *           type: string
  */
@@ -79,16 +80,20 @@ router.use(authMiddleware)
  *             properties:
  *               title:
  *                 type: string
+ *                 example: "My Movie"
  *               description:
  *                 type: string
+ *                 example: "A great movie"
  *               releaseDate:
  *                 type: string
- *                 format: date
+ *                 format: date-time
+ *                 example: "2025-05-12T02:17:25.443Z"
  *               genre:
  *                 type: string
+ *                 example: "Action"
  *     responses:
  *       201:
- *         description: Movie created successfully
+ *         description: Movie created successfullyL
  *       400:
  *         description: Invalid input
  *       401:
@@ -143,7 +148,7 @@ router.use(authMiddleware)
  *               description:
  *                 type: string
  *               releaseDate:
- *                 type: string
+ *                 type: date-time
  *                 format: date
  *               genre:
  *                 type: string

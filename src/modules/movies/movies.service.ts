@@ -32,7 +32,7 @@ export const getAllMovies = async () => {
 
 export const getMovieById = async (id: string) => {
     try {
-        // Try get from cache first
+
         const cached = await movieCache.getMovie(id)
         if (cached) return cached
 
@@ -59,7 +59,11 @@ export const getMovieById = async (id: string) => {
         // Save to cache
         await movieCache.setMovie(id, movie)
         return movie
-    } catch (error) {
+    } catch (error: any) {
+        // Handle Prisma error code P2023 (Malformed ObjectID)
+        if (error.code === 'P2023') {
+            throw new Error('Invalid movie id format')
+        }
         console.error('Error fetching movie:', error)
         throw error
     }
@@ -68,23 +72,48 @@ export const getMovieById = async (id: string) => {
 export const createMovie = async (data: {
     title: string
     description: string
-    releaseDate: Date
+    releaseDate: string
     genre: string
 }) => {
     try {
-        const movie = await prisma.movie.create({
-            data,
-            include: {
-                reviews: true
+        const existingTitle = await prisma.movie.findFirst({
+            where: {
+                OR: [
+                    { title: data.title }
+
+                ]
             }
         })
+        if (existingTitle) {
+            throw new Error('Title already exists')
+        }
+        const movie = await prisma.movie.create({
+            data: {
+                ...data,
+                releaseDate: new Date(data.releaseDate),
+            },
+            include: {
+                reviews: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                username: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+        await movieCache.setMovie(movie.id, movie)
 
-        // Invalidate cache
         await movieCache.invalidateAll()
         return movie
     } catch (error) {
-        console.error('Error creating movie:', error)
-        throw error
+        if (error instanceof Error) {
+            throw new Error(`Create failed: ${error.message}`)
+        }
+        throw new Error('Create failed: Unknown error')
     }
 }
 
