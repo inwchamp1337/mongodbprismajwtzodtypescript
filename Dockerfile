@@ -24,9 +24,9 @@ ENV NODE_ENV production
 
 RUN chmod +x ./entrypoint.sh
 # Build and prepare Prisma at build time
-RUN npm run build
-RUN npx prisma generate
 
+RUN npx prisma generate
+RUN npm run build
 
 # Command to run your application
 CMD ["/bin/sh", "./entrypoint.sh"]
