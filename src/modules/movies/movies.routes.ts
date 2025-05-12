@@ -185,6 +185,6 @@ router.get('/', getAllMovies)
 router.get('/:id', validateRequest(movieParamsSchema), getMovieById)
 router.post('/', validateRequest(createMovieSchema), createMovie)
 router.put('/:id', validateRequest(updateMovieSchema), updateMovie)
-router.delete('/:id', validateRequest(movieParamsSchema), deleteMovie2)
+router.delete('/:id', validateRequest(movieParamsSchema), deleteMovie)
 
 export default router
