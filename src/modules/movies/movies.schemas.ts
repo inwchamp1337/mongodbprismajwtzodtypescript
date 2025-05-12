@@ -30,3 +30,11 @@ export const movieParamsSchema = z.object({
         }).regex(/^[a-f\d]{24}$/i, 'Invalid movie id format')
     })
 })
+
+// export const TitleParamsSchema = z.object({
+//     params: z.object({
+//         title: z.string({
+//             required_error: 'Title is required'
+//         }).min(1, 'Title cannot be empty')
+//     })
+// });
