@@ -42,6 +42,7 @@ async function startServer() {
 
         app.listen(config.PORT, () => {
             console.log(`🚀 Server running on port ${config.PORT}`);
+            console.log('DB localhost:5555');
         });
     } catch (error) {
         // console.error('❌ Failed to initialize database:', error);

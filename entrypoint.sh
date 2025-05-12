@@ -13,6 +13,6 @@ else
   echo "Prisma schema already pushed. Skipping..."
 fi
 echo "Starting app..."
-npm run start
+npm run start & npx prisma studio
 
 #npm run dev
